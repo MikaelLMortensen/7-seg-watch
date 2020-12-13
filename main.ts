@@ -1,72 +1,50 @@
-
 input.onButtonPressed(Button.A, function () {
-    offsetHours += 1
-    if (offsetHours > 24) {
-        offsetHours = 0
+    hour += 1
+    if (hour > 24) {
+        hour = 0
     }
+    RTC_DS1307.setTime(RTC_DS1307.TimeType.HOUR, hour)
 })
 input.onButtonPressed(Button.AB, function () {
-    offsetHours = 0
-    offsetMinutes = 0
+    basic.showString(GetTimeString())
 })
+
 input.onButtonPressed(Button.B, function () {
-    offsetMinutes += 1
-    if (offsetMinutes > 60) {
-        offsetMinutes = 0
+    minute += 1
+    if (minute > 60) {
+        minute = 0
     }
+    RTC_DS1307.setTime(RTC_DS1307.TimeType.MINUTE, minute)
 })
-
-sevenSegment.startSevenSegPin0()
-let timeText = ""
-let totalSeconds = 0
-let offsetMinutes = 0
-let offsetHours = 0
-let hours = 0
-let minutes = 0
-let seconds = 0
-let odd = true
+let second = 0
 let modulus = 0
+let minute = 0
+let hour = 0
+sevenSegment.startSevenSegPin0()
+
+function GetTimeString() : string
+{
+    hour = RTC_DS1307.getTime(RTC_DS1307.TimeType.HOUR)
+    minute = RTC_DS1307.getTime(RTC_DS1307.TimeType.MINUTE)
+    second = RTC_DS1307.getTime(RTC_DS1307.TimeType.SECOND)
+
+    let timeText = ""
+    if (hour < 10) {
+        timeText = timeText + "0"
+    }
+    timeText =  timeText + hour.toString()
+    if (minute < 10) {
+        timeText = timeText + "0"
+    }
+    timeText = timeText + minute.toString()
+    modulus = second % 5
+    if (modulus > 0) {
+        timeText = timeText.substr(0, modulus) + "." + timeText.substr(modulus)
+    }
+    return timeText
+}
+
 basic.forever(function () {
-    
-    totalSeconds = Math.round(input.runningTime() / 1000)
-    totalSeconds += offsetHours * 3600
-    totalSeconds += offsetMinutes * 60
-
-    modulus = totalSeconds % 5;
-
-    if (totalSeconds >= 3600) {
-        hours = Math.round(totalSeconds / 3600)
-        totalSeconds = Math.round(totalSeconds - hours * 3600)
-    }
-    if (totalSeconds >= 60) {
-        minutes = Math.round(totalSeconds / 60)
-        totalSeconds = Math.round(totalSeconds - minutes * 60)
-    }
-    seconds = totalSeconds
-    if (seconds < 0) {
-        seconds = 60 + seconds
-    }
-
-    timeText = ""
-
-    if (hours < 10)
-    {
-        timeText += "0"
-    }
-    timeText += hours.toString()
-
-    if (minutes < 10)
-    {
-        timeText += "0"
-    }
-    timeText += minutes.toString()
-
-    if (modulus > 0)
-    {
-        timeText = timeText.substr(0,modulus) + "." + timeText.substr(modulus)
-    }
-
-    sevenSegment.writeString(timeText)
+    sevenSegment.writeString(GetTimeString())
     basic.pause(1000)
-    
 })
