@@ -21,6 +21,7 @@ let modulus = 0
 let minute = 0
 let hour = 0
 sevenSegment.startSevenSegPin0()
+RTC_DS1307.DateTime(2020, 12, 13, 14, 28, 0)
 
 function GetTimeString() : string
 {
