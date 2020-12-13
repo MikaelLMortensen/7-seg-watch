@@ -60,13 +60,6 @@ basic.forever(function () {
         timeText += "0"
     }
     timeText += minutes.toString()
-/*
-    if (seconds < 10)
-    {
-        timeText += "0"
-    }
-    timeText += seconds.toString()
-*/
 
     if (modulus > 0)
     {
@@ -74,7 +67,6 @@ basic.forever(function () {
     }
 
     sevenSegment.writeString(timeText)
-    //basic.showString(timeText)
-    basic.pause(900)
+    basic.pause(1000)
     
 })
